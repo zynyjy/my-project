@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>注册 - CloudRaft Drive</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-card animate-in">
+    <h1>创建账号</h1>
+    <p class="subtitle">加入 CloudRaft Drive，享受分布式云盘服务</p>
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="username">用户名</label>
+        <input id="username" type="text" placeholder="请输入用户名" autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input id="password" type="password" placeholder="至少 6 位" autocomplete="new-password" required minlength="6" />
+      </div>
+      <div class="form-group">
+        <label for="confirm">确认密码</label>
+        <input id="confirm" type="password" placeholder="请再次输入密码" autocomplete="new-password" required minlength="6" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">注 册</button>
+    </form>
+    <p class="auth-link">已有账号？<a href="/assets/login.html">立即登录</a></p>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '') + ' show';
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      if (password !== confirm) {
+        showToast('两次输入的密码不一致', true);
+        return;
+      }
+      if (password.length < 6) {
+        showToast('密码至少 6 位', true);
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'username': username, 'password': password }),
+        }).then(r => r.json());
+
+        if (!resp.ok) {
+          showToast(resp.error || '注册失败', true);
+          return;
+        }
+
+        showToast('注册成功，即将跳转登录页...');
+        setTimeout(() => { window.location.href = '/assets/login.html'; }, 1500);
+      } catch (err) {
+        showToast('网络错误，请重试', true);
+      }
+    });
+  </script>
+</body>
+</html>

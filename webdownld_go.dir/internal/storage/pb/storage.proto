@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package storagepb;
+option go_package = "webdownld_go/internal/storage/pb;storagepb";
+
+// StorageNode 是存储节点的 gRPC 接口，负责分片文件的落盘与读取。
+service StorageNode {
+  // SaveChunk 流式上传分片数据到存储节点，返回保存结果。
+  rpc SaveChunk(stream ChunkData) returns (ChunkResult);
+
+  // ReadChunk 流式读取分片数据。
+  rpc ReadChunk(ChunkRequest) returns (stream ChunkDataMsg);
+
+  // DeleteChunk 删除指定分片。
+  rpc DeleteChunk(ChunkRequest) returns (DeleteResult);
+
+  // ChunkExists 检查分片是否存在（用于去重预判）。
+  rpc ChunkExists(ChunkRequest) returns (ExistResult);
+}
+
+message ChunkData {
+  // upload_id 上传会话 ID（仅第一个包携带元信息，后续包只带 data）。
+  string upload_id = 1;
+  // index 分片序号。
+  int32 index = 2;
+  // data 分片原始字节。
+  bytes data = 3;
+}
+
+message ChunkResult {
+  // chunk_hash 分片内容 SHA256 哈希（hex）。
+  string chunk_hash = 1;
+  // size 分片字节大小。
+  int64 size = 2;
+  // storage_id 实际落盘的存储节点标识。
+  string storage_id = 3;
+  // reused 是否命中已存在分片（去重）。
+  bool reused = 4;
+}
+
+message ChunkRequest {
+  // storage_id 目标存储节点（客户端用于校验）。
+  string storage_id = 1;
+  // chunk_hash 分片内容哈希。
+  string chunk_hash = 2;
+}
+
+message ChunkDataMsg {
+  // data 分片原始字节。
+  bytes data = 1;
+  // total_size 总分片大小。
+  int64 total_size = 2;
+}
+
+message DeleteResult {
+  bool ok = 1;
+}
+
+message ExistResult {
+  bool exists = 1;
+}

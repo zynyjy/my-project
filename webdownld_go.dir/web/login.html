@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 - CloudRaft Drive</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-card animate-in">
+    <h1>CloudRaft Drive</h1>
+    <p class="subtitle">基于 Raft 共识的分布式云盘</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">用户名</label>
+        <input id="username" type="text" placeholder="请输入用户名" autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input id="password" type="password" placeholder="请输入密码" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">登 录</button>
+    </form>
+    <p class="auth-link">还没有账号？<a href="/assets/register.html">立即注册</a></p>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const API = '/api/auth';
+
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '') + ' show';
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const resp = await fetch(API + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'username': username, 'password': password }),
+        }).then(r => r.json());
+
+        if (!resp.ok) {
+          showToast(resp.error || '登录失败', true);
+          return;
+        }
+
+        localStorage.setItem('accessToken', resp['access_token']);
+        localStorage.setItem('refreshToken', resp['refresh_token']);
+        localStorage.setItem('username', resp['username']);
+        localStorage.setItem('isMember', resp['is_member'] ? '1' : '0');
+
+        window.location.href = '/';
+      } catch (err) {
+        showToast('网络错误，请重试', true);
+      }
+    });
+
+    // 已登录则直接跳转。
+    if (localStorage.getItem('accessToken')) {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudRaft Drive - 分布式云盘</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="topbar">
+    <div class="brand">CloudRaft Drive</div>
+    <div class="nav-right">
+      <span class="user-info" id="userDisplay"></span>
+      <span id="memberBadge" class="member-badge" style="display:none">会员</span>
+      <button id="rechargeBtn" class="btn btn-outline btn-sm">充值会员</button>
+      <button id="logoutBtn" class="btn btn-sm" style="background:#eee;color:var(--text)">退出</button>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="page">
+    <!-- 上传区域 -->
+    <section class="upload-card animate-in" id="dropZone">
+      <h2>拖拽上传文件</h2>
+      <p>将文件拖拽到此处，体验分片上传与秒传</p>
+      <input id="fileInput" type="file" multiple />
+      <div id="progressPanel" class="progress-panel"></div>
+    </section>
+
+    <!-- 文件列表 -->
+    <section class="files-section animate-in">
+      <div class="section-head">
+        <h2>文件列表</h2>
+        <small id="selectionHint">可多选（Ctrl/Cmd 点击）</small>
+        <button id="refreshBtn" class="btn btn-outline btn-sm">刷新</button>
+      </div>
+      <div id="fileGrid" class="file-grid"></div>
+    </section>
+  </main>
+
+  <!-- 充值弹窗 -->
+  <div id="rechargeModal" class="modal-overlay" style="display:none">
+    <div class="modal-card">
+      <h2>开通会员</h2>
+      <div id="planList" class="plan-list"></div>
+      <div class="modal-actions">
+        <button id="modalCancel" class="btn" style="background:#eee;color:var(--text)">取消</button>
+        <button id="modalConfirm" class="btn btn-primary">立即支付</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>

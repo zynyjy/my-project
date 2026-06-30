@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package raftimpl;
+option go_package = "github.com/raftimpl/mini/internal/raft/pb;pb";
+
+// 节点间 Raft 算法 RPC（非业务 KV 接口）。
+service InternalRaft {
+  rpc RequestVote(RequestVoteArgs) returns (RequestVoteReply);
+  rpc AppendEntries(AppendEntriesArgs) returns (AppendEntriesReply);
+}
+
+message LogEntryMsg {
+  int32 term = 1;
+  bytes command = 2;
+}
+
+message RequestVoteArgs {
+  int32 term = 1;
+  int32 candidate_id = 2;
+  int32 last_log_index = 3;
+  int32 last_log_term = 4;
+}
+
+message RequestVoteReply {
+  int32 term = 1;
+  bool vote_granted = 2;
+}
+
+message AppendEntriesArgs {
+  int32 term = 1;
+  int32 leader_id = 2;
+  int32 prev_log_index = 3;
+  int32 prev_log_term = 4;
+  repeated LogEntryMsg entries = 5;
+  int32 leader_commit = 6;
+}
+
+message AppendEntriesReply {
+  int32 term = 1;
+  bool success = 2;
+  // 拒绝同步时的加速回滚提示（etcd / TiKV 等常用优化）：
+  // conflict_term == 0 且 success == false：Follower 在 prev_log_index 处尚无日志，
+  //   conflict_index 为其本地下一条应追加的索引（即 len(本地 log)）。
+  // conflict_term > 0：prev_log_index 处本地条目任期为该值，conflict_index 为该任期在本地日志中的首条索引。
+  int32 conflict_term = 3;
+  int32 conflict_index = 4;
+}

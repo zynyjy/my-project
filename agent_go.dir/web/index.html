@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent Go Console</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <header class="global-nav">
+      <a class="brand" href="/" aria-label="Agent Go Console">
+        <span class="brand-mark"></span>
+        <span>Agent Go</span>
+      </a>
+      <div class="nav-actions">
+        <span id="mcp-status" class="status-chip muted-chip">MCP</span>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <div class="cards-grid">
+        <!-- CPU 折线图卡片 -->
+        <article class="card fade-card" id="cpu-card">
+          <div class="card-header">
+            <div>
+              <p class="section-kicker">CPU 监控</p>
+              <h2>进程 CPU 使用率</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap"><canvas id="cpu-chart"></canvas></div>
+          </div>
+        </article>
+
+        <!-- 内存折线图卡片 -->
+        <article class="card fade-card" id="memory-card">
+          <div class="card-header">
+            <div>
+              <p class="section-kicker">内存监控</p>
+              <h2>进程内存使用率</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap"><canvas id="memory-chart"></canvas></div>
+          </div>
+        </article>
+
+        <!-- 告警卡片 -->
+        <article class="card fade-card" id="alerts-card">
+          <div class="card-header">
+            <div>
+              <p class="section-kicker">告警</p>
+              <h2>实时告警</h2>
+            </div>
+            <span id="alert-count" class="status-chip warn-chip">0</span>
+          </div>
+          <div class="card-body">
+            <div id="alerts-list" class="alerts-list">
+              <div class="empty-state">暂无告警</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- 动漫客服图标 -->
+    <div id="anime-widget" class="anime-widget" title="AI 客服助手">
+      <div class="anime-avatar">
+        <div class="anime-head">
+          <div class="anime-hair"></div>
+          <div class="anime-face">
+            <div class="anime-eye left"></div>
+            <div class="anime-eye right"></div>
+            <div class="anime-mouth"></div>
+          </div>
+        </div>
+        <div class="anime-body"></div>
+      </div>
+      <div class="anime-badge">?</div>
+    </div>
+
+    <!-- 聊天弹窗 -->
+    <div id="chat-overlay" class="chat-overlay hidden">
+      <div class="overlay-backdrop"></div>
+      <div class="overlay-card">
+        <div class="overlay-header">
+          <h3>AI 智能客服</h3>
+          <button id="overlay-close" type="button" aria-label="关闭">&times;</button>
+        </div>
+        <div id="overlay-messages" class="overlay-messages" aria-live="polite">
+          <div class="overlay-placeholder">请输入您想咨询的内容</div>
+        </div>
+        <form id="overlay-composer" class="overlay-composer">
+          <textarea id="overlay-input" placeholder="请输入您想咨询的内容"></textarea>
+          <button id="overlay-send" type="submit">发送</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/assets/app.js"></script>
+  </body>
+</html>
