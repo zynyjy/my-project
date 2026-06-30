@@ -107,13 +107,8 @@ func fnv1a(s string) uint64 {
 }
 
 // SaveChunk 保存单个分片到对应存储节点，返回分片哈希、大小、目标节点和是否去重命中。
-// ctx 为请求上下文，uploadID 为上传会话 ID，index 为分片序号，reader 为分片数据。
-// 注意：当前实现会将 reader 全部读入内存后再发送，高并发时内存压力由上层 chunkPool 控制。
-func (s *Service) SaveChunk(ctx context.Context, uploadID string, index int, reader io.Reader) (chunkHash string, size int64, storageID string, reused bool, err error) {
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		return
-	}
+// ctx 为请求上下文，uploadID 为上传会话 ID，index 为分片序号，data 为分片二进制数据（调用方负责 buffer 生命周期，本函数不持有引用）。
+func (s *Service) SaveChunk(ctx context.Context, uploadID string, index int, data []byte) (chunkHash string, size int64, storageID string, reused bool, err error) {
 	sum := sha256.Sum256(data)
 	chunkHash = hex.EncodeToString(sum[:])
 	size = int64(len(data))

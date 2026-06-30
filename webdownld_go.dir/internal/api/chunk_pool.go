@@ -1,7 +1,6 @@
 package api
 
 import (
-	"bytes"
 	"context"
 	"sync"
 
@@ -86,7 +85,7 @@ func NewChunkWorkerPool(storageSvc *storage.Service, workers, queueSize int) *Ch
 					job.ctx,
 					job.task.uploadID,
 					job.task.index,
-					bytes.NewReader(job.task.data),
+					job.task.data,
 				)
 				// 任务完成后归还 buffer 到池中，降低 GC 压力。
 				PutChunkBuf(job.task.data)
